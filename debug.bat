@@ -1,11 +1,11 @@
-@ECHO OFF
+@echo off
 
-SET Debug_File= .\debug\ColorCoder.rdbg
-SET Executable= .\build\Win32_ColorCoder.exe
+set DEBUG_FILE= .\debug\ColorCoder.rdbg
+set EXE= .\build\Win32_ColorCoder.exe
 
-CALL F:\Apps\RemedyBG\remedybg.exe %Debug_File%
+call F:\Apps\RemedyBG\remedybg.exe %DEBUG_FILE%
 
-PAUSE
+pause
 
 
 
