@@ -1,0 +1,78 @@
+version(2);
+project_name = "CraftingInterpreters";
+
+patterns = {
+    "*.java",
+    "*.bat",
+    "*.sh",
+    "*.4coder",
+};
+blacklist_patterns = {
+    ".*",
+};
+
+load_paths = {
+    .win = {
+        { .path = ".", .recursive = true, .relative = true, },
+    },
+};
+
+commands = 
+{
+    .build_c = {
+        .win              = "build.bat --c",
+        .out              = "*compilation*",
+        .footer_panel     = true,
+        .save_dirty_files = true,
+        .cursor_at_end    = false,
+    },
+    
+    .build_java = {
+        .win              = "build_java.bat",
+        .out              = "*compilation*",
+        .footer_panel     = true,
+        .save_dirty_files = true,
+        .cursor_at_end    = false,
+    },
+    
+    .run_c = {
+        .win = "run.bat --c",
+        .footer_panel     = false,
+        .save_dirty_files = true ,
+        .cursor_at_end    = false,
+    },
+    
+	.run_java = {
+        .win = "run.bat --java",
+        .footer_panel     = false,
+        .save_dirty_files = true ,
+        .cursor_at_end    = false,
+    },
+	
+    .debug_c = {
+        .win = "debug.bat --c",
+        .footer_panel     = false,
+        .save_dirty_files = false,
+        .cursor_at_end    = false,
+    },
+	
+    .debug_java = {
+        .win = "debug.bat --java",
+        .footer_panel     = false,
+        .save_dirty_files = false,
+        .cursor_at_end    = false,
+    },
+};
+
+fkey_command =
+{
+    .F1  = "build_c",
+    .F2  = "build_java",
+    
+    .F12 = "run_c",
+	.F11 = "debug_c",
+    
+    .F10 = "run_java",
+	.F9  = "debug_java",
+};
+
