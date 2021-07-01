@@ -1,0 +1,9 @@
+project.4coder
+# Files
+*.bat
+
+# Directories
+docs/
+debug/
+build/
+res/
