@@ -19,45 +19,67 @@ load_paths = {
 
 commands = 
 {
-    .build_c = {
-        .win              = "build.bat --c",
+    .build_clox = {
+        .win              = "build_clox.bat",
         .out              = "*compilation*",
         .footer_panel     = true,
         .save_dirty_files = true,
         .cursor_at_end    = false,
     },
     
-    .build_java = {
-        .win              = "build_java.bat",
+    .build_finlang = {
+        .win              = "build_finlang.bat",
         .out              = "*compilation*",
         .footer_panel     = true,
         .save_dirty_files = true,
         .cursor_at_end    = false,
     },
     
-    .run_c = {
-        .win = "run.bat --c",
+    .build_jlox = {
+        .win              = "build_jlox.bat",
+        .out              = "*compilation*",
+        .footer_panel     = true,
+        .save_dirty_files = true,
+        .cursor_at_end    = false,
+    },
+    
+    .run_clox = {
+        .win = "run_clox.bat",
         .footer_panel     = false,
         .save_dirty_files = true ,
         .cursor_at_end    = false,
     },
     
-	.run_java = {
-        .win = "run.bat --java",
+	.run_finlang = {
+        .win = "run_finlang.bat",
         .footer_panel     = false,
         .save_dirty_files = true ,
         .cursor_at_end    = false,
     },
 	
-    .debug_c = {
-        .win = "debug.bat --c",
+	.run_jlox = {
+        .win = "run_jlox.bat",
+        .footer_panel     = false,
+        .save_dirty_files = true ,
+        .cursor_at_end    = false,
+    },
+	
+    .debug_clox = {
+        .win = "debug_clox.bat",
         .footer_panel     = false,
         .save_dirty_files = false,
         .cursor_at_end    = false,
     },
 	
-    .debug_java = {
-        .win = "debug.bat --java",
+    .debug_finlang = {
+        .win = "debug_finlang.bat --java",
+        .footer_panel     = false,
+        .save_dirty_files = false,
+        .cursor_at_end    = false,
+    },
+    
+    .debug_jlox = {
+        .win = "debug_jlox.bat",
         .footer_panel     = false,
         .save_dirty_files = false,
         .cursor_at_end    = false,
@@ -66,13 +88,16 @@ commands =
 
 fkey_command =
 {
-    .F1  = "build_c",
-    .F2  = "build_java",
+    .F1  = "build_clox",
+    .F2  = "build_finlang",
+    .F3  = "build_jlox",
     
-    .F12 = "run_c",
-	.F11 = "debug_c",
-    
-    .F10 = "run_java",
-	.F9  = "debug_java",
+    .F12 = "run_clox",
+    .F10 = "run_finlang",
+    .F8  = "run_jlox",
+	
+    .F11 = "debug_clox",
+    .F9  = "debug_finlang",
+	.F7  = "debug_jlox",
 };
 
