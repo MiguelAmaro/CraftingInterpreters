@@ -2,6 +2,8 @@
 
 echo building jlox
 
+set JAVAC=F:\Dev_Tools\jdk\jdk-15.0.2\bin\javac.exe
+
 set JVAC_BYTECODE_DIR= ^
 .\build
 
@@ -15,8 +17,7 @@ set LIBRARIES=
 rem START BUILD
 rem ****************************************
 
-call F:\Dev_Tools\jdk\jdk-15.0.2\bin\javac.exe ^
-%JVAC_FLAGS% ^
+call %JAVAC% %JVAC_FLAGS% %JVAC_BYTECODE_DIR%^
 .\src\java\jlox\AstPrinter.java ^
 .\src\java\jlox\Environment.java ^
 .\src\java\jlox\Expr.java ^

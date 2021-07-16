@@ -4,13 +4,15 @@ package com.craftinginterpreters.lox;
 import java.util.HashMap;
 import java.util.Map;
 
-class Environment {
+class Environment
+{
     //> enclosing-field
     final Environment enclosing;
     //< enclosing-field
     private final Map<String, Object> values = new HashMap<>();
     //> environment-constructors
-    Environment() {
+    Environment()
+    {
         enclosing = null;
     }
     

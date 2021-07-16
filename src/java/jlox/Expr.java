@@ -23,7 +23,7 @@ abstract class Expr
         R visitUnaryExpr(Unary expr);
         R visitVariableExpr(Variable expr);
     }
-    
+    // NOTE(MIGUEL): this is created off of the leangage's definded BNF metasyntax
     static class Assign extends Expr
     {
         Assign(Token name, Expr value)
