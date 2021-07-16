@@ -1,9 +1,10 @@
 # Metasyntax
 
+```c
 // TODO(MIGUEL): expand on this to this need to deviate from jlox
+
 expression -> literal; | unary | binary | grouping
 
-```
 literal    ->                                                                
 grouping   ->  "(" | expression | ")";                                       
 unary      ->  ("-" | "!") expression;                                       
