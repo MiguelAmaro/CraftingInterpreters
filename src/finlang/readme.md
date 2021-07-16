@@ -3,14 +3,13 @@
 // TODO(MIGUEL): expand on this to this need to deviate from jlox
 expression -> literal; | unary | binary | grouping
 
-| table                                                                        |
-| :--------------------------------------------------------------------------- |
-| literal    ->                                                                |
-| grouping   ->  "(" | expression | ")";                                       |
-| unary      ->  ("-" | "!") expression;                                       |
-| binary     ->  expression operator expression                                |
-| operator   ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" |
-
+```
+literal    ->                                                                
+grouping   ->  "(" | expression | ")";                                       
+unary      ->  ("-" | "!") expression;                                       
+binary     ->  expression operator expression                                
+operator   ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" 
+```
 
 # Associativity Table
 | name        | operators          | associates |
