@@ -12,11 +12,12 @@ expression -> literal; | unary | binary | grouping
 
 
 # Associativity Table
-| ----------- | -----     |   ------ |
-|Equality     | == !=     |  left    |
-|Comparison   | > >= < <= |  left    |
-|term         | - +       |  left    |
-|factor       | / *       |  left    |
-|unary        |! -        |  left    |
+| name        | operators | associates |
+| ----------- | --------- | ---------- |
+|Equality     | == !=     |  left      |
+|Comparison   | > >= < <= |  left      |
+|term         | - +       |  left      |
+|factor       | / *       |  left      |
+|unary        |! -        |  left      |
 
 
