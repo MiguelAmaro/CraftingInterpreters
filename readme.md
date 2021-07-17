@@ -1,3 +1,6 @@
+// TODO(MIGUEL): go over this again and look for spelling issuse
+# About
+
 This repo contains my work on learning to write compilers/interpeters on a basic level.
 I am using https://craftinginterpreters.com as you may have figured from the repo name.
 This is a book I've been wanting to read and I took my Java class's final project as an
