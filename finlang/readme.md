@@ -2,8 +2,6 @@
 
 ## Metasyntax v.02
 ```c
-// TODO(MIGUEL): expand on this to this need to deviate from jlox
-
 expression -> literal; | unary | binary | grouping
 
 literal    ->  NUMBER | STRING | "true" | "false" | "nullptr" ;
