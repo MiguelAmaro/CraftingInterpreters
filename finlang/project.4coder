@@ -28,14 +28,14 @@ commands =
     },
     
     .run = {
-        .win = "run.bat",
+        .win              = "run.bat",
         .footer_panel     = false,
         .save_dirty_files = true ,
         .cursor_at_end    = false,
     },
     
     .debug = {
-        .win = "debug.bat",
+        .win              = "debug.bat",
         .footer_panel     = false,
         .save_dirty_files = false,
         .cursor_at_end    = false,

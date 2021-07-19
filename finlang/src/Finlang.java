@@ -1,23 +1,36 @@
-// TODO(MIGUEL): create language meta syntax
-// TODO(MIGUEL): write scanner
-// TODO(MIGUEL): write parser
-// TODO(MIGUEL): find out what to do next
+package com.finlang.lang;
 
-///!!!! MAIN !!!!
-public static void main(String[] args) throws IOException
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
+
+import java.util.List;
+
+class Finlang
 {
-    if (args.length > 1)
+    private static final FLInterpreter interpreter     = new FLInterpreter();
+    static boolean                     hadError        = false;
+    static boolean                     hadRuntimeError = false;
+    
+    
+    public static void main(String[] args) throws IOException
     {
-        System.out.println("Usage: finlang [script]");
-        System.exit(64); // [64]
-    }
-    else if (args.length == 1)
-    {
-        runFile(args[0]);
-    }
-    else
-    {
-        
-        runPrompt();
+        if (args.length > 1)
+        {
+            System.out.println("Usage: finlang [script]");
+            System.exit(64); // [64]
+        }
+        else if (args.length == 1)
+        {
+            runFile(args[0]);
+        }
+        else
+        {
+            runPrompt();
+        }
     }
 }

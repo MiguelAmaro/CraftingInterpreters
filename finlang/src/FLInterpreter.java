@@ -1,7 +1,7 @@
 package com.finlang.lang;
 
 // NOTE(MIGUEL): MENTIONED IN: 7.2
-class Interpreter implements Expr.Visitor<Object>
+class FLInterpreter implements Expr.Visitor<Object>
 {
     @Override
         public Object visitLiteralExpr(Expr.Literal expr)
@@ -110,7 +110,7 @@ class Interpreter implements Expr.Visitor<Object>
                 checkNumberOperands(expr.operator, left, right);
                 return (double)left *  (double)right;
             }
-            case BANG_EQUAL   :
+            case NOT_EQUAL   :
             { 
                 return !isEqual(left, right);
             }

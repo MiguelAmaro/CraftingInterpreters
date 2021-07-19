@@ -1,5 +1,7 @@
 # Finlang Specs
 
+// TODO(MIGUEL): add multiline comment /* */
+
 ## Metasyntax v.02
 ```c
 // TODO(MIGUEL): expand on this to this need to deviate from jlox
