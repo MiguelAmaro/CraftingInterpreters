@@ -1,4 +1,3 @@
-// TODO(MIGUEL): go over this again and look for spelling issuse
 # About
 
 This repo contains my work on learning to how write compilers/interpeters at a basic level.
