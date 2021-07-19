@@ -10,7 +10,7 @@ abstract class FLExpr {
     R visitUnaryFLExpr(Unary flexpr);
   }
   static class Binary extends FLExpr {
-    Binary(Expr left, Token operator, Expr right) {
+    Binary(FLExpr left, FLToken operator, FLExpr right) {
       this.left = left;
       this.operator = operator;
       this.right = right;
@@ -21,12 +21,12 @@ abstract class FLExpr {
       return visitor.visitBinaryFLExpr(this);
     }
 
-    final Expr left;
-    final Token operator;
-    final Expr right;
+    final FLExpr left;
+    final FLToken operator;
+    final FLExpr right;
   }
   static class Grouping extends FLExpr {
-    Grouping(Expr expression) {
+    Grouping(FLExpr expression) {
       this.expression = expression;
     }
 
@@ -35,7 +35,7 @@ abstract class FLExpr {
       return visitor.visitGroupingFLExpr(this);
     }
 
-    final Expr expression;
+    final FLExpr expression;
   }
   static class Literal extends FLExpr {
     Literal(Object value) {
@@ -50,7 +50,7 @@ abstract class FLExpr {
     final Object value;
   }
   static class Unary extends FLExpr {
-    Unary(Token operator, Expr right) {
+    Unary(FLToken operator, FLExpr right) {
       this.operator = operator;
       this.right = right;
     }
@@ -60,8 +60,8 @@ abstract class FLExpr {
       return visitor.visitUnaryFLExpr(this);
     }
 
-    final Token operator;
-    final Expr right;
+    final FLToken operator;
+    final FLExpr right;
   }
 
   abstract <R> R accept(Visitor<R> visitor);

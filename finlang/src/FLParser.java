@@ -3,24 +3,24 @@ package com.finlang.lang;
 
 import java.util.List;
 
-import static com.finlang.lang.TokenType.*;
+import static com.finlang.lang.FLTokenType.*;
 
 // NOTE(MIGUEL): MENTIONED IN: 6.2.1
 class Parser
 {
     private static class ParseError extends RuntimeException {}
     
-    private final List<Token> tokens;
+    private final List<FLToken> tokens;
     private int current = 0;
     
     
-    Parser(List<Token> tokens)
+    Parser(List<FLToken> tokens)
     {
         this.tokens = tokens;
     }
     
     //~ EVALUATING FUNCTIONS
-    Expr parse()
+    FLExpr parse()
     {
         try
         {
@@ -30,113 +30,111 @@ class Parser
         {
             return null;
         }
-        
-        return null;
     }
     
-    private Expr expression()
+    private FLExpr expression()
     {
         return equality();
     }
     
-    private Expr equality()
+    private FLExpr equality()
     {
-        Expr expr = comparison();
+        FLExpr expr = comparison();
         
-        // TODO(MIGUEL): rename BANG_EQUAL "!="
-        while (match(BANG_EQUAL, EQUAL_EQUAL))
+        // TODO(MIGUEL): rename NOT_EQUAL "!="
+        while (match(NOT_EQUAL, EQUAL_EQUAL))
         {
-            Token operator = previous();
-            Expr right = comparison();
-            expr = new Expr.Binary(expr, operator, right);
+            FLToken operator = previous();
+            FLExpr right = comparison();
+            expr = new FLExpr.Binary(expr, operator, right);
         }
         
         return expr;
     }
     
-    private Expr comparison()
+    private FLExpr comparison()
     {
-        Expr expr = term();
+        FLExpr expr = term();
         
         while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL))
         {
-            Token operator = previous();
-            Expr right = term();
-            expr = new Expr.Binary(expr, operator, right);
+            FLToken operator = previous();
+            FLExpr right = term();
+            expr = new FLExpr.Binary(expr, operator, right);
         }
         
         return expr;
     }
     
     // NOTE(MIGUEL): addition & subtraction
-    private Expr term()
+    private FLExpr term()
     {
-        Expr expr = factor();
+        FLExpr expr = factor();
         
         while (match(MINUS, PLUS))
         {
-            Token operator = previous();
-            Expr right = factor();
-            expr = new Expr.Binary(expr, operator, right);
+            FLToken operator = previous();
+            FLExpr right = factor();
+            expr = new FLExpr.Binary(expr, operator, right);
         }
         
         return expr;
     }
     
     // NOTE(MIGUEL): multiplication & division
-    private Expr factor()
+    private FLExpr factor()
     {
-        Expr expr = unary();
+        FLExpr expr = unary();
         
         while (match(SLASH, STAR))
         {
-            Token operator = previous();
-            Expr right = unary();
-            expr = new Expr.Binary(expr, operator, right);
+            FLToken operator = previous();
+            FLExpr right = unary();
+            expr = new FLExpr.Binary(expr, operator, right);
         }
         
         return expr;
     }
     
     // NOTE(MIGUEL): negation
-    private Expr unary()
+    private FLExpr unary()
     {
-        if (match(BANG, MINUS))
+        if (match(NOT, MINUS))
         {
-            Token operator = previous();
-            Expr right = unary();
+            FLToken operator = previous();
+            FLExpr right = unary();
             // NOTE(MIGUEL): RETURNS EARLY V
-            return new Expr.Unary(operator, right);
+            return new FLExpr.Unary(operator, right);
         }
         
         return primary();
     }
     
-    private Expr primary()
+    private FLExpr primary()
     {
-        if (match(FALSE)) return new Expr.Literal(false);
-        if (match(TRUE )) return new Expr.Literal(true);
-        if (match(NIL  )) return new Expr.Literal(null);
+        if (match(FALSE)) return new FLExpr.Literal(false);
+        if (match(TRUE )) return new FLExpr.Literal(true);
+        if (match(NULL  )) return new FLExpr.Literal(null);
         
         if (match(NUMBER, STRING)) 
         {
-            return new Expr.Literal(previous().literal);
+            return new FLExpr.Literal(previous().literal);
         }
         
-        if (match(LEFT_PAREN))
+        if (match(PAREN_LEFT))
         {
-            Expr expr = expression();
-            consume(RIGHT_PAREN, "Expect ')' after expression.");
-            return new Expr.Grouping(expr);
+            FLExpr expr = expression();
+            consume(PAREN_RIGHT, "Expect ')' after expression.");
+            return new FLExpr.Grouping(expr);
         }
         
         throw error(peek(), "Expect expression.");
     }
     
     //~ HELPER FUNCTIONS
-    private boolean match(TokenType... types)
+    private boolean match(FLTokenType... types)
     {
-        for(TokenType type : types)
+        for(FLTokenType type : types)
         {
             if (check(type))
             {
@@ -148,20 +146,20 @@ class Parser
         return false;
     }
     
-    private Token consume(TokenType type, String message)
+    private FLToken consume(FLTokenType type, String message)
     {
         if (check(type)) return advance();
         
         throw error(peek(), message);
     }
-    private boolean check(TokenType type)
+    private boolean check(FLTokenType type)
     {
         if (isAtEnd()) return false;
         
         return peek().type == type;
     }
     
-    private Token advance()
+    private FLToken advance()
     {
         if (!isAtEnd()) current++;
         
@@ -173,37 +171,25 @@ class Parser
         return peek().type == EOF;
     }
     
-    private Token peek()
+    private FLToken peek()
     {
         return tokens.get(current);
     }
     
-    private Token previous()
+    private FLToken previous()
     {
         return tokens.get(current - 1);
     }
     
-    //~ PANIC MODE ERROR REPORTING
-    private ParseError error(Token token, String message)
+    private ParseError error(FLToken token, String message)
     {
-        Lox.error(token, message);
+        Finlang.error(token, message);
         
         return new ParseError();
     }
     
-    static void error(Token token, String message)
-    {
-        if (token.type == TokenType.EOF)
-        {
-            report(token.line, " at end", message);
-        }
-        else 
-        {
-            report(token.line, " at '" + token.lexeme + "'", message);
-        }
-        
-        return;
-    }
+    
+    //~ PANIC MODE ERROR REPORTING
     
     private void synchronize()
     {

@@ -16,7 +16,7 @@ set LIBRARIES=
 
 rem RUN
 rem ****************************************
-if "%1" equ ""       (goto :FINLANG)
+if "%1" equ "fl"     (goto :FINLANG)
 if "%1" equ "astgen" (goto :ASTGEN )
 if "%1" equ "help"   (goto :HELP   )
 
@@ -26,12 +26,13 @@ echo.
 echo By default builds finlang.
 echo.
 echo Optional [command] can be:
+echo   fl      - runs finlang
 echo   astgen  - runs the abstract synax tree generator
 
 goto :eof
 
 :FINLANG
-%JVM% %JVM_FLAGS% com.finlang.lang.Finlang
+%JVM% %JVM_FLAGS% com.finlang.lang.Finlang "%~2"
 goto :eof
 
 :ASTGEN

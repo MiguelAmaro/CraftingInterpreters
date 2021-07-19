@@ -10,23 +10,24 @@ import static com.finlang.lang.FLTokenType.*;
 class FLScanner
 {
     private final String source;
-    private final List<Token> tokens = new ArrayList<>();
+    private final List<FLToken> tokens = new ArrayList<>();
     private int start   = 0;
     private int current = 0;
     private int line    = 1;
     
-    private static final Map<String, TokenType> keywords;
+    private static final Map<String, FLTokenType> keywords;
     static
     {
         keywords = new HashMap<>();
         keywords.put("and",    AND);
         keywords.put("class",  CLASS);
+        keywords.put("struct", STRUCT);
         keywords.put("else",   ELSE);
         keywords.put("false",  FALSE);
         keywords.put("for",    FOR);
         keywords.put("fun",    FUN);
         keywords.put("if",     IF);
-        keywords.put("nil",    NULL);
+        keywords.put("null",   NULL);
         keywords.put("or",     OR);
         keywords.put("print",  PRINT);
         keywords.put("return", RETURN);
@@ -34,6 +35,16 @@ class FLScanner
         keywords.put("this",   THIS);
         keywords.put("true",   TRUE);
         keywords.put("var",    VAR);
+        
+        keywords.put("u8",     UNSIGNED_INT_8BIT);
+        keywords.put("u16",    UNSIGNED_INT_16BIT);
+        keywords.put("u32",    UNSIGNED_INT_32BIT);
+        keywords.put("u64",    UNSIGNED_INT_64BIT);
+        
+        keywords.put("s8",     SIGNED_INT_8BIT);
+        keywords.put("s16",    SIGNED_INT_16BIT);
+        keywords.put("s32",    SIGNED_INT_32BIT);
+        keywords.put("s64",    SIGNED_INT_64BIT);
         keywords.put("while",  WHILE);
     }
     
@@ -42,7 +53,7 @@ class FLScanner
         this.source = source;
     }
     
-    List<Token> scanTokens()
+    List<FLToken> scanTokens()
     {
         while (!isAtEnd())
         {
@@ -51,7 +62,7 @@ class FLScanner
             scanToken();
         }
         
-        tokens.add(new Token(EOF, "", null, line));
+        tokens.add(new FLToken(EOF, "", null, line));
         return tokens;
     }
     
@@ -129,7 +140,7 @@ class FLScanner
                 }
                 else
                 {
-                    Lox.error(line, "Unexpected character.");
+                    Finlang.error(line, "Unexpected character.");
                 }
             }break;
         }
@@ -140,7 +151,7 @@ class FLScanner
         while (isAlphaNumeric(peek())) advance();
         
         String    text = source.substring(start, current);
-        TokenType type = keywords.get(text);
+        FLTokenType type = keywords.get(text);
         
         if (type == null) type = IDENTIFIER;
         
@@ -187,7 +198,7 @@ class FLScanner
         
         if (isAtEnd())
         {
-            Lox.error(line, "Unterminated string.");
+            Finlang.error(line, "Unterminated string.");
             return;
         }
         
@@ -232,15 +243,15 @@ class FLScanner
         return source.charAt(current++);
     }
     
-    private void addToken(TokenType type)
+    private void addToken(FLTokenType type)
     {
         addToken(type, null);
     }
     
-    private void addToken(TokenType type, Object literal)
+    private void addToken(FLTokenType type, Object literal)
     {
         String text = source.substring(start, current);
-        tokens.add(new Token(type, text, literal, line));
+        tokens.add(new FLToken(type, text, literal, line));
     }
 }
 

@@ -1,22 +1,35 @@
 package com.finlang.lang;
 
 // NOTE(MIGUEL): MENTIONED IN: 7.2
-class FLInterpreter implements Expr.Visitor<Object>
+class FLInterpreter implements FLExpr.Visitor<Object>
 {
+    void interpret(FLExpr expression)
+    { 
+        try
+        {
+            Object value = evaluate(expression);
+            System.out.println(stringify(value));
+        }
+        catch (FLRuntimeError error)
+        {
+            Finlang.runtimeError(error);
+        }
+    }
+    
     @Override
-        public Object visitLiteralExpr(Expr.Literal expr)
+        public Object visitLiteralFLExpr(FLExpr.Literal expr)
     {
         return expr.value;
     }
     
     @Override
-        public Object visitUnaryExpr(Expr.Unary expr)
+        public Object visitUnaryFLExpr(FLExpr.Unary expr)
     {
         Object right = evaluate(expr.right);
         
         switch (expr.operator.type)
         {
-            case BANG : return !isTruthy(right);
+            case NOT : return !isTruthy(right);
             case MINUS: checkNumberOperand(expr.operator, right); return -(double)right;
         }
         
@@ -24,17 +37,25 @@ class FLInterpreter implements Expr.Visitor<Object>
         return null;
     }
     
-    private void checkNumberOperand(Token operator, Object operand)
+    @Override
+        public Object visitGroupingFLExpr(FLExpr.Grouping expr)
     {
-        if (operand instanceof Double) return;
-        throw new RuntimeError(operator, "Operand must be a number.");
+        return evaluate(expr.expression);
     }
     
-    private void checkNumberOperands(Token operator, Object left, Object right)
+    private void checkNumberOperand(FLToken operator, Object operand)
+    {
+        if (operand instanceof Double) return;
+        
+        throw new FLRuntimeError(operator, "Operand must be a number.");
+    }
+    
+    
+    private void checkNumberOperands(FLToken operator, Object left, Object right)
     {
         if (left instanceof Double && right instanceof Double) return;
         
-        throw new RuntimeError(operator, "Operands must be numbers.");
+        throw new FLRuntimeError(operator, "Operands must be numbers.");
     }
     
     private boolean isTruthy(Object object)
@@ -53,20 +74,28 @@ class FLInterpreter implements Expr.Visitor<Object>
         return a.equals(b);
     }
     
-    @Override
-        public Object visitGroupingExpr(Expr.Grouping expr)
-    {
-        return evaluate(expr.expression);
+    private String stringify(Object object) {
+        if (object == null) return "nil";
+        
+        if (object instanceof Double) {
+            String text = object.toString();
+            if (text.endsWith(".0")) {
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        }
+        
+        return object.toString();
     }
     
     //~ HELPER FUNCTIONS
-    private Object evaluate(Expr expr) 
+    private Object evaluate(FLExpr expr) 
     {
         return expr.accept(this);
     }
     
     @Override
-        public Object visitBinaryExpr(Expr.Binary expr)
+        public Object visitBinaryFLExpr(FLExpr.Binary expr)
     {
         Object left = evaluate(expr.left);
         Object right = evaluate(expr.right); 
@@ -98,8 +127,20 @@ class FLInterpreter implements Expr.Visitor<Object>
                 checkNumberOperands(expr.operator, left, right);
                 return (double)left -  (double)right;
             }
-            throw new RuntimeError(expr.operator,
-                                   "Operands must be two numbers or two strings.");
+            case PLUS:
+            {
+                if (left instanceof Double && right instanceof Double)
+                {
+                    return (double)left + (double)right;
+                }
+                if (left instanceof String && right instanceof String)
+                {
+                    return (String)left + (String)right;
+                }
+                
+                throw new FLRuntimeError(expr.operator,
+                                         "Operands must be two numbers or two strings.");
+            }
             case SLASH        :
             { 
                 checkNumberOperands(expr.operator, left, right);
@@ -122,13 +163,5 @@ class FLInterpreter implements Expr.Visitor<Object>
         
         // Unreachable.
         return null;
-    }
-    
-    private boolean isTruthy(Object object)
-    {
-        if (object == null) return false;
-        if (object instanceof Boolean) return (boolean)object;
-        
-        return true;
     }
 }

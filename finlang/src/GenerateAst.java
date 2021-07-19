@@ -20,10 +20,10 @@ public class GenerateAst
         
         try
         {
-            defineAst(outputDir, "FLExpr", Arrays.asList("Binary   : Expr left, Token operator, Expr right",
-                                                         "Grouping : Expr expression",
+            defineAst(outputDir, "FLExpr", Arrays.asList("Binary   : FLExpr left, FLToken operator, FLExpr right",
+                                                         "Grouping : FLExpr expression",
                                                          "Literal  : Object value",
-                                                         "Unary    : Token operator, Expr right"));
+                                                         "Unary    : FLToken operator, FLExpr right"));
         }
         catch(IOException e)
         {

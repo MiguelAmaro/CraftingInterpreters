@@ -37,9 +37,13 @@ echo building finlang...
 
 %JAVAC% %JAVAC_FLAGS% ^
 .\src\Finlang.java ^
-.\src\FLScanner.java ^
+.\src\FLExpr.java ^
+.\src\FLInterpreter.java ^
 .\src\FLParser.java ^
-.\src\FLInterpreter.java 
+.\src\FLRuntimeError.java ^
+.\src\FLScanner.java ^
+.\src\FLToken.java ^
+.\src\FLTokenType.java
 goto :eof
 
 :ASTGEN

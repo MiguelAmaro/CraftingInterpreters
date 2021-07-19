@@ -7,7 +7,7 @@ class FLToken
     final Object    literal;
     final int       line; 
     
-    Token(FLTokenType type, String lexeme, Object literal, int line)
+    FLToken(FLTokenType type, String lexeme, Object literal, int line)
     {
         this.type    = type;
         this.lexeme  = lexeme;

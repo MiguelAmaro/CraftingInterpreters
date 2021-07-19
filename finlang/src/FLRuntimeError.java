@@ -1,10 +1,10 @@
 package com.finlang.lang;
 
-class RuntimeError extends RuntimeException
+class FLRuntimeError extends RuntimeException
 {
-    final Token token;
+    final FLToken token;
     
-    RuntimeError(Token token, String message)
+    FLRuntimeError(FLToken token, String message)
     {
         super(message);
         this.token = token;
