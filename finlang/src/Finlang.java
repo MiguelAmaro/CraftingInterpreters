@@ -50,6 +50,8 @@ class Finlang
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
         
+        if(hadRuntimeError) System.exit(70);
+        
         return;
     }
     
@@ -74,12 +76,15 @@ class Finlang
         FLScanner     scanner = new FLScanner(source);
         List<FLToken>  tokens = scanner.scanTokens();
         
-        // NOTE(MIGUEL): Parser not hooked up yet?????
-        // For now, just print the tokens.
-        for (FLToken token : tokens)
-        {
-            System.out.println(token);
-        }
+        FLParser parser        = new FLParser(tokens);
+        List<FLStmt>statements = parser.parse();
+        
+        // Stop if there was a syntax error.
+        if (hadError) return;
+        
+        //System.out.println(new FLAstPrinter().print(statements));
+        
+        interpreter.interpret(statements);
         
         return;
     }

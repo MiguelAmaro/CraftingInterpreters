@@ -1,16 +1,24 @@
 package com.finlang.lang;
 
+import java.util.List;
+
 // NOTE(MIGUEL): MENTIONED IN: 7.2
-class FLInterpreter implements FLExpr.Visitor<Object>
+class FLInterpreter implements
+FLExpr.Visitor<Object>,
+FLStmt.Visitor<Void>
 {
-    void interpret(FLExpr expression)
-    { 
+    private FLEnvironment environment = new FLEnvironment();
+    
+    void interpret(List<FLStmt> statements)
+    {
         try
         {
-            Object value = evaluate(expression);
-            System.out.println(stringify(value));
+            for (FLStmt statement : statements)
+            {
+                execute(statement);
+            }
         }
-        catch (FLRuntimeError error)
+        catch (FLRuntimeError error) 
         {
             Finlang.runtimeError(error);
         }
@@ -35,6 +43,13 @@ class FLInterpreter implements FLExpr.Visitor<Object>
         
         // Unreachable.
         return null;
+    }
+    
+    @Override
+        public Object visitVariableFLExpr(FLExpr.Variable expr)
+    {
+        
+        return environment.get(expr.name);
     }
     
     @Override
@@ -92,6 +107,79 @@ class FLInterpreter implements FLExpr.Visitor<Object>
     private Object evaluate(FLExpr expr) 
     {
         return expr.accept(this);
+    }
+    
+    void executeBlock(List<FLStmt> statements, FLEnvironment environment)
+    {
+        FLEnvironment previous = this.environment;
+        
+        try
+        {
+            this.environment = environment;
+            
+            for (FLStmt statement : statements)
+            {
+                execute(statement);
+            }
+        }
+        finally
+        {
+            this.environment = previous;
+        }
+    }
+    
+    private void execute(FLStmt stmt)
+    {
+        stmt.accept(this);
+    }
+    
+    @Override
+        public Void visitBlockFLStmt(FLStmt.Block stmt)
+    {
+        executeBlock(stmt.statements, new FLEnvironment(environment));
+        
+        return null;
+    }
+    
+    @Override
+        public Void visitExpressionFLStmt(FLStmt.Expression stmt)
+    {
+        evaluate(stmt.expression);
+        
+        return null;
+    }
+    
+    @Override
+        public Void visitPrintFLStmt(FLStmt.Print stmt)
+    {
+        Object value = evaluate(stmt.expression);
+        System.out.println(stringify(value));
+        
+        return null;
+    }
+    
+    @Override
+        public Void visitVarFLStmt(FLStmt.Var stmt)
+    {
+        Object value = null;
+        
+        if (stmt.initializer != null)
+        {
+            value = evaluate(stmt.initializer);
+        }
+        
+        environment.define(stmt.name.lexeme, value);
+        
+        return null;
+    }
+    
+    @Override
+        public Object visitAssignFLExpr(FLExpr.Assign expr)
+    {
+        Object value = evaluate(expr.value);
+        environment.assign(expr.name, value);
+        
+        return value;
     }
     
     @Override

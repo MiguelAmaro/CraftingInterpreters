@@ -20,6 +20,7 @@ enum FLTokenType
     AND, CLASS, STRUCT, ELSE, FALSE, FUN, FOR, IF, NULL, OR,
     PRINT, RETURN, SUPER, THIS, TRUE,
     // NOTE(MIGUEL): PRIMITIVE TYPES
+    // REF: https://www.baeldung.com/jni
     SIGNED_INT_8BIT,
     SIGNED_INT_16BIT,
     SIGNED_INT_32BIT,

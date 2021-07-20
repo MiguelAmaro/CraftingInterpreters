@@ -37,11 +37,14 @@ echo building finlang...
 
 %JAVAC% %JAVAC_FLAGS% ^
 .\src\Finlang.java ^
+.\src\FLAstPrinter.java ^
 .\src\FLExpr.java ^
+.\src\FLEnvironment.java ^
 .\src\FLInterpreter.java ^
 .\src\FLParser.java ^
 .\src\FLRuntimeError.java ^
 .\src\FLScanner.java ^
+.\src\FLStmt.java ^
 .\src\FLToken.java ^
 .\src\FLTokenType.java
 goto :eof

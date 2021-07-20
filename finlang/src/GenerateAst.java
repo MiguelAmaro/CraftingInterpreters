@@ -20,10 +20,18 @@ public class GenerateAst
         
         try
         {
-            defineAst(outputDir, "FLExpr", Arrays.asList("Binary   : FLExpr left, FLToken operator, FLExpr right",
+            
+            defineAst(outputDir, "FLExpr", Arrays.asList("Assign   : FLToken name, FLExpr value",
+                                                         "Binary   : FLExpr left, FLToken operator, FLExpr right",
                                                          "Grouping : FLExpr expression",
                                                          "Literal  : Object value",
-                                                         "Unary    : FLToken operator, FLExpr right"));
+                                                         "Unary    : FLToken operator, FLExpr right",
+                                                         "Variable : FLToken name" ));
+            
+            defineAst(outputDir, "FLStmt", Arrays.asList("Block      : List<FLStmt> statements",
+                                                         "Expression : FLExpr expression",
+                                                         "Print      : FLExpr expression",
+                                                         "Var        : FLToken name, FLExpr initializer"));
         }
         catch(IOException e)
         {
@@ -42,7 +50,7 @@ public class GenerateAst
         writer.println();
         writer.println("import java.util.List;");
         writer.println();
-        writer.println("abstract class " + baseName + " {");
+        writer.println("abstract class " + baseName + "\n{");
         
         defineVisitor(writer, baseName, types);
         
@@ -56,7 +64,7 @@ public class GenerateAst
         writer.println();
         writer.println("  abstract <R> R accept(Visitor<R> visitor);");
         
-        writer.println("}");
+        writer.println("}\n");
         writer.close();
     }
     
@@ -64,10 +72,10 @@ public class GenerateAst
                                    String className, String fieldList)
     {
         writer.println("  static class " + className + " extends " +
-                       baseName + " {");
+                       baseName + "\n{");
         
         // Constructor.
-        writer.println("    " + className + "(" + fieldList + ") {");
+        writer.println("    " + className + "(" + fieldList + ")\n{");
         
         // Store parameters in fields.
         String[] fields = fieldList.split(", ");
@@ -78,12 +86,12 @@ public class GenerateAst
             writer.println("      this." + name + " = " + name + ";");
         }
         
-        writer.println("    }");
+        writer.println("    }\n");
         
         // Visitor pattern.
         writer.println();
         writer.println("    @Override");
-        writer.println("    <R> R accept(Visitor<R> visitor) {");
+        writer.println("    <R> R accept(Visitor<R> visitor)\n{");
         writer.println("      return visitor.visit" +
                        className + baseName + "(this);");
         writer.println("    }");
@@ -95,12 +103,12 @@ public class GenerateAst
             writer.println("    final " + field + ";");
         }
         
-        writer.println("  }");
+        writer.println("  }\n");
     }
     
     private static void defineVisitor(PrintWriter writer, String baseName, List<String> types)
     {
-        writer.println("  interface Visitor<R> {");
+        writer.println("  interface Visitor<R>\n{");
         
         for (String type : types)
         {
@@ -110,6 +118,6 @@ public class GenerateAst
                            typeName + " " + baseName.toLowerCase() + ");");
         }
         
-        writer.println("  }");
+        writer.println("  }\n");
     }
 }

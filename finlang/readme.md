@@ -1,5 +1,77 @@
 # Finlang Specs
 
+
+
+## Metasyntax v.05
+```c
+program     -> statement* EOF ;
+
+decleration -> varDecl | statement ;
+
+varDecl     -> "var" IDENTIFIER ( "=" expression )? ";" ;
+
+statement   -> exprStmt | printStmt ;
+
+exprStmt    -> expression ";" ;
+printStmt   -> "print" expression ";" ;
+
+expression  -> literal; | unary | binary | grouping
+
+assignment  -> IDENTIFIER "=" assignment | equality ;
+
+
+literal     ->  NUMBER | STRING | "true" | "false" | "nullptr" ;
+grouping    ->  
+unary       ->  ("-" | "!") primary;                                       
+binary      ->  expression operator expression                                
+operator    ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" 
+primary     ->  NUMBER | STRING | "true" | "false" | "nullptr" "(" | expression | ")" | IDENTIFIER;
+```
+
+
+## Metasyntax v.04
+```c
+program     -> statement* EOF ;
+
+decleration -> varDecl | statement;
+
+varDecl     -> "var" IDENTIFIER ( "=" expression )? ";" ;
+
+statement   -> exprStmt | printStmt ;
+
+exprStmt    -> expression ";" ;
+printStmt   -> "print" expression ";" ;
+
+expression  -> literal; | unary | binary | grouping
+
+literal     ->  NUMBER | STRING | "true" | "false" | "nullptr" ;
+grouping    ->  
+unary       ->  ("-" | "!") primary;                                       
+binary      ->  expression operator expression                                
+operator    ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" 
+primary     ->  NUMBER | STRING | "true" | "false" | "nullptr" "(" | expression | ")" | IDENTIFIER;
+```
+
+
+## Metasyntax v.03
+```c
+program    -> statement* EOF ;
+
+statement  -> exprStmt | printStmt ;
+exprStmt   -> expression ";" ;
+printStmt  -> "print" expression ";" ;
+
+expression -> literal; | unary | binary | grouping
+
+literal    ->  NUMBER | STRING | "true" | "false" | "nullptr" ;
+grouping   ->  
+unary      ->  ("-" | "!") primary;                                       
+binary     ->  expression operator expression                                
+operator   ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" 
+primary    ->  NUMBER | STRING | "true" | "false" | "nullptr" "(" | expression | ")";
+```
+
+
 ## Metasyntax v.02
 ```c
 expression -> literal; | unary | binary | grouping

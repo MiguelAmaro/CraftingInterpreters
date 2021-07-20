@@ -1,12 +1,13 @@
 package com.finlang.lang;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.finlang.lang.FLTokenType.*;
 
 // NOTE(MIGUEL): MENTIONED IN: 6.2.1
-class Parser
+class FLParser
 {
     private static class ParseError extends RuntimeException {}
     
@@ -14,27 +15,135 @@ class Parser
     private int current = 0;
     
     
-    Parser(List<FLToken> tokens)
+    FLParser(List<FLToken> tokens)
     {
         this.tokens = tokens;
     }
     
     //~ EVALUATING FUNCTIONS
-    FLExpr parse()
+    List<FLStmt> parse()
     {
-        try
+        List<FLStmt> statements = new ArrayList<>();
+        
+        while (!isAtEnd())
         {
-            return expression();
+            statements.add(declaration());
         }
-        catch (ParseError error)
+        
+        return statements; 
+    }
+    
+    private FLStmt statement()
+    {
+        if (match(PRINT)) return printStatement();
+        if (match(BRACE_LEFT)) return new FLStmt.Block(block());
+        
+        return expressionStatement();
+    }
+    
+    private FLStmt printStatement()
+    {
+        FLExpr value = expression();
+        
+        consume(SEMICOLON, "Expect ';' after value.");
+        
+        return new FLStmt.Print(value);
+    }
+    
+    private FLStmt varDeclaration()
+    {
+        FLToken name = consume(IDENTIFIER, "Expect variable name.");
+        
+        FLExpr initializer = null;
+        
+        if (match(EQUAL))
         {
-            return null;
+            initializer = expression();
         }
+        
+        consume(SEMICOLON, "Expect ';' after variable declaration.");
+        return new FLStmt.Var(name, initializer);
+    }
+    
+    private FLStmt expressionStatement()
+    {
+        FLExpr expr = expression();
+        
+        consume(SEMICOLON, "Expect ';' after expression.");
+        
+        return new FLStmt.Expression(expr);
+    }
+    
+    private List<FLStmt> block()
+    {
+        List<FLStmt> statements = new ArrayList<>();
+        
+        while (!check(BRACE_RIGHT) && !isAtEnd())
+        {
+            statements.add(declaration());
+        }
+        
+        consume(BRACE_RIGHT, "Expect '}' after block.");
+        
+        return statements;
+    }
+    
+    private FLExpr assignment()
+    {
+        FLExpr expr = equality();
+        
+        if (match(EQUAL))
+        {
+            FLToken equals = previous();
+            FLExpr  value  = assignment();
+            
+            if (expr instanceof FLExpr.Variable)
+            {
+                FLToken name = ((FLExpr.Variable)expr).name;
+                return new FLExpr.Assign(name, value);
+            }
+            
+            error(equals, "Invalid assignment target."); 
+        }
+        
+        return expr;
     }
     
     private FLExpr expression()
     {
-        return equality();
+        return assignment();
+    }
+    
+    private FLStmt declaration()
+    {
+        try
+        {
+            if (match(VAR)) 
+            {
+                return varDeclaration();
+            }
+            else if(match(  SIGNED_INT_8BIT ) ||
+                    match(  SIGNED_INT_16BIT) ||
+                    match(  SIGNED_INT_32BIT) ||
+                    match(  SIGNED_INT_64BIT) ||
+                    match(UNSIGNED_INT_8BIT ) ||
+                    match(UNSIGNED_INT_16BIT) ||
+                    match(UNSIGNED_INT_32BIT) ||
+                    match(UNSIGNED_INT_64BIT))
+            {
+                // TODO(MIGUEL): implement native types
+                //return native call;
+                return varDeclaration(); //temp
+            }
+            
+            
+            return statement();
+        }
+        catch (ParseError error)
+        {
+            synchronize();
+            return null;
+        }
     }
     
     private FLExpr equality()
