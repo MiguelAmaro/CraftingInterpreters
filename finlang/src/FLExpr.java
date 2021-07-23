@@ -10,6 +10,7 @@ abstract class FLExpr
     R visitBinaryFLExpr(Binary flexpr);
     R visitGroupingFLExpr(Grouping flexpr);
     R visitLiteralFLExpr(Literal flexpr);
+    R visitLogicalFLExpr(Logical flexpr);
     R visitUnaryFLExpr(Unary flexpr);
     R visitVariableFLExpr(Variable flexpr);
   }
@@ -86,6 +87,27 @@ abstract class FLExpr
     }
 
     final Object value;
+  }
+
+  static class Logical extends FLExpr
+{
+    Logical(FLExpr left, FLToken operator, FLExpr right)
+{
+      this.left = left;
+      this.operator = operator;
+      this.right = right;
+    }
+
+
+    @Override
+    <R> R accept(Visitor<R> visitor)
+{
+      return visitor.visitLogicalFLExpr(this);
+    }
+
+    final FLExpr left;
+    final FLToken operator;
+    final FLExpr right;
   }
 
   static class Unary extends FLExpr

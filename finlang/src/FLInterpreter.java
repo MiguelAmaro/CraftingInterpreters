@@ -31,6 +31,23 @@ FLStmt.Visitor<Void>
     }
     
     @Override
+        public Object visitLogicalFLExpr(FLExpr.Logical expr)
+    {
+        Object left = evaluate(expr.left);
+        
+        if (expr.operator.type == FLTokenType.OR)
+        {
+            if (isTruthy(left)) return left;
+        }
+        else
+        {
+            if (!isTruthy(left)) return left;
+        }
+        
+        return evaluate(expr.right);
+    }
+    
+    @Override
         public Object visitUnaryFLExpr(FLExpr.Unary expr)
     {
         Object right = evaluate(expr.right);
@@ -50,6 +67,18 @@ FLStmt.Visitor<Void>
     {
         
         return environment.get(expr.name);
+    }
+    
+    @Override
+        public Void visitWhileFLStmt(FLStmt.While stmt)
+    {
+        
+        while (isTruthy(evaluate(stmt.condition)))
+        {
+            execute(stmt.body);
+        }
+        
+        return null;
     }
     
     @Override
@@ -89,14 +118,18 @@ FLStmt.Visitor<Void>
         return a.equals(b);
     }
     
-    private String stringify(Object object) {
+    private String stringify(Object object)
+    {
         if (object == null) return "nil";
         
-        if (object instanceof Double) {
+        if (object instanceof Double)
+        {
             String text = object.toString();
-            if (text.endsWith(".0")) {
+            if (text.endsWith(".0"))
+            {
                 text = text.substring(0, text.length() - 2);
             }
+            
             return text;
         }
         
@@ -107,6 +140,13 @@ FLStmt.Visitor<Void>
     private Object evaluate(FLExpr expr) 
     {
         return expr.accept(this);
+    }
+    
+    private void execute(FLStmt stmt)
+    {
+        stmt.accept(this);
+        
+        return;
     }
     
     void executeBlock(List<FLStmt> statements, FLEnvironment environment)
@@ -126,11 +166,8 @@ FLStmt.Visitor<Void>
         {
             this.environment = previous;
         }
-    }
-    
-    private void execute(FLStmt stmt)
-    {
-        stmt.accept(this);
+        
+        return;
     }
     
     @Override
@@ -145,6 +182,21 @@ FLStmt.Visitor<Void>
         public Void visitExpressionFLStmt(FLStmt.Expression stmt)
     {
         evaluate(stmt.expression);
+        
+        return null;
+    }
+    
+    @Override
+        public Void visitIfFLStmt(FLStmt.If stmt)
+    {
+        if (isTruthy(evaluate(stmt.condition)))
+        {
+            execute(stmt.thenBranch);
+        }
+        else if (stmt.elseBranch != null)
+        {
+            execute(stmt.elseBranch);
+        }
         
         return null;
     }

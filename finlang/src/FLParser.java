@@ -2,6 +2,7 @@ package com.finlang.lang;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.finlang.lang.FLTokenType.*;
@@ -35,10 +36,95 @@ class FLParser
     
     private FLStmt statement()
     {
-        if (match(PRINT)) return printStatement();
+        if (match(PRINT     )) return  printStatement();
+        if (match(IF        )) return     ifStatement();
+        if (match(WHILE     )) return  whileStatement();
+        if (match(FOR       )) return    forStatement();
         if (match(BRACE_LEFT)) return new FLStmt.Block(block());
         
         return expressionStatement();
+    }
+    
+    private FLStmt forStatement()
+    {
+        consume(PAREN_LEFT, "Expect '(' after 'for'.");
+        
+        FLStmt initializer;
+        
+        if (match(SEMICOLON))
+        {
+            initializer = null;
+        }
+        else if (match(VAR))
+        {
+            initializer = varDeclaration();
+        }
+        else
+        {
+            initializer = expressionStatement();
+        }        
+        
+        FLExpr condition = null;
+        if (!check(SEMICOLON))
+        {
+            condition = expression();
+        }
+        
+        consume(SEMICOLON, "Expect ';' after loop condition.");
+        
+        FLExpr increment = null;
+        if (!check(PAREN_RIGHT))
+        {
+            increment = expression();
+        }
+        
+        consume(PAREN_RIGHT, "Expect ')' after for clauses.");
+        
+        FLStmt body = statement();
+        
+        if (increment != null)
+        {
+            body = new FLStmt.Block(Arrays.asList(body, new FLStmt.Expression(increment)));
+        }
+        
+        if (condition == null) condition = new FLExpr.Literal(true);
+        
+        body = new FLStmt.While(condition, body);
+        
+        if (initializer != null)
+        {
+            body = new FLStmt.Block(Arrays.asList(initializer, body));
+        }
+        
+        return body;
+    }
+    
+    private FLStmt whileStatement()
+    {
+        consume(PAREN_LEFT, "Expect '(' after 'while'.");
+        FLExpr condition = expression();
+        
+        consume(PAREN_RIGHT, "Expect ')' after condition.");
+        FLStmt body = statement();
+        
+        return new FLStmt.While(condition, body);
+    }
+    
+    private FLStmt ifStatement()
+    {
+        consume(PAREN_LEFT, "Expect '(' after 'if'.");
+        FLExpr condition = expression();
+        consume(PAREN_RIGHT, "Expect ')' after if condition."); 
+        
+        FLStmt thenBranch = statement();
+        FLStmt elseBranch = null;
+        
+        if (match(ELSE))
+        {
+            elseBranch = statement();
+        }
+        
+        return new FLStmt.If(condition, thenBranch, elseBranch);
     }
     
     private FLStmt printStatement()
@@ -62,6 +148,7 @@ class FLParser
         }
         
         consume(SEMICOLON, "Expect ';' after variable declaration.");
+        
         return new FLStmt.Var(name, initializer);
     }
     
@@ -90,7 +177,7 @@ class FLParser
     
     private FLExpr assignment()
     {
-        FLExpr expr = equality();
+        FLExpr expr = or();
         
         if (match(EQUAL))
         {
@@ -104,6 +191,34 @@ class FLParser
             }
             
             error(equals, "Invalid assignment target."); 
+        }
+        
+        return expr;
+    }
+    
+    private FLExpr or()
+    {
+        FLExpr expr = and();
+        
+        while (match(OR))
+        {
+            FLToken operator = previous();
+            FLExpr     right = and();
+            expr             = new FLExpr.Logical(expr, operator, right);
+        }
+        
+        return expr;
+    }
+    
+    private FLExpr and()
+    {
+        FLExpr expr = equality();
+        
+        while (match(AND))
+        {
+            FLToken operator = previous();
+            FLExpr right = equality();
+            expr       = new FLExpr.Logical(expr, operator, right);
         }
         
         return expr;
@@ -233,11 +348,13 @@ class FLParser
         if (match(PAREN_LEFT))
         {
             FLExpr expr = expression();
+            
             consume(PAREN_RIGHT, "Expect ')' after expression.");
+            
             return new FLExpr.Grouping(expr);
         }
         
-        throw error(peek(), "Expect expression.");
+        throw error(peek(), "Expect expression. Im here");
     }
     
     //~ HELPER FUNCTIONS

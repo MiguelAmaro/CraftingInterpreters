@@ -25,13 +25,17 @@ public class GenerateAst
                                                          "Binary   : FLExpr left, FLToken operator, FLExpr right",
                                                          "Grouping : FLExpr expression",
                                                          "Literal  : Object value",
+                                                         "Logical  : FLExpr left, FLToken operator, FLExpr right",
                                                          "Unary    : FLToken operator, FLExpr right",
                                                          "Variable : FLToken name" ));
             
             defineAst(outputDir, "FLStmt", Arrays.asList("Block      : List<FLStmt> statements",
                                                          "Expression : FLExpr expression",
+                                                         "If         : FLExpr condition, FLStmt thenBranch," + 
+                                                         " FLStmt elseBranch",
                                                          "Print      : FLExpr expression",
-                                                         "Var        : FLToken name, FLExpr initializer"));
+                                                         "Var        : FLToken name, FLExpr initializer",
+                                                         "While      : FLExpr condition, FLStmt body"));
         }
         catch(IOException e)
         {

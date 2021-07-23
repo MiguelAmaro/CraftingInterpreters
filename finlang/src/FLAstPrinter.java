@@ -14,6 +14,13 @@ class FLAstPrinter implements FLExpr.Visitor<String>
     }
     
     @Override
+        public String visitLogicalFLExpr(FLExpr.Logical expr)
+    {
+        return parenthesize(expr.operator.lexeme,
+                            expr.left, expr.right);
+    }
+    
+    @Override
         public String visitAssignFLExpr(FLExpr.Assign expr)
     {
         return parenthesize(expr.name.lexeme);
