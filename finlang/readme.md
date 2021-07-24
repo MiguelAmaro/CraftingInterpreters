@@ -3,7 +3,7 @@
 
 ## Metasyntax v.08
 ```c
-program     -> statement* EOF ;
+program     -> decleration* EOF ;
 
 decleration -> varDecl | statement ;
 
@@ -12,8 +12,8 @@ varDecl     -> "var" IDENTIFIER ( "=" expression )? ";" ;
 statement   -> exprStmt | forStmt | ifStmt | printStmt | whileStmt | block ;
 
 forStmt     -> "for" "(" ( varDecl | exprStmt | ";" )
-               expression? ";"
-               expression? ")" statement ;
+expression? ";"
+expression? ")" statement ;
 
 ifStmt      -> "if" "(" expression ")" statement ("else"                         statement) ? ;
 
@@ -38,6 +38,8 @@ binary      ->  expression operator expression
 operator    ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" 
 primary     ->  NUMBER | STRING | "true" | "false" | "nullptr" "(" | expression | ")" | IDENTIFIER;
 ```
+
+
 ### Added 
 ## Metasyntax v.07
 ```c

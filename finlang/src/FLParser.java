@@ -339,12 +339,14 @@ class FLParser
         if (match(FALSE)) return new FLExpr.Literal(false);
         if (match(TRUE )) return new FLExpr.Literal(true);
         if (match(NULL  )) return new FLExpr.Literal(null);
-        
         if (match(NUMBER, STRING)) 
         {
             return new FLExpr.Literal(previous().literal);
         }
-        
+        if (match(IDENTIFIER))
+        {
+            return new FLExpr.Variable(previous());
+        }
         if (match(PAREN_LEFT))
         {
             FLExpr expr = expression();
