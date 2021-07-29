@@ -26,7 +26,7 @@ class FLParser
     {
         List<FLStmt> statements = new ArrayList<>();
         
-        while (!isAtEnd())
+        while (!isAtEnd()) //EOF
         {
             statements.add(declaration());
         }
@@ -142,6 +142,22 @@ class FLParser
         
         FLExpr initializer = null;
         
+        if (match(COLON))
+        {
+            initializer = expression();
+        }
+        
+        consume(SEMICOLON, "Expect ';' after variable declaration.");
+        
+        return new FLStmt.Var(name, initializer);
+    }
+    
+    private FLStmt nativeVarDeclaration()
+    {
+        FLToken name = consume(IDENTIFIER, "Expect variable name.");
+        
+        FLExpr initializer = null;
+        
         if (match(EQUAL))
         {
             initializer = expression();
@@ -151,6 +167,7 @@ class FLParser
         
         return new FLStmt.Var(name, initializer);
     }
+    
     
     private FLStmt expressionStatement()
     {
@@ -179,7 +196,7 @@ class FLParser
     {
         FLExpr expr = or();
         
-        if (match(EQUAL))
+        if (match(COLON))
         {
             FLToken equals = previous();
             FLExpr  value  = assignment();
@@ -187,6 +204,7 @@ class FLParser
             if (expr instanceof FLExpr.Variable)
             {
                 FLToken name = ((FLExpr.Variable)expr).name;
+                
                 return new FLExpr.Assign(name, value);
             }
             
@@ -233,18 +251,18 @@ class FLParser
     {
         try
         {
-            if (match(VAR)) 
+            if (match(VAR)) //TOKENTYPE
             {
                 return varDeclaration();
             }
-            else if(match(  SIGNED_INT_8BIT ) ||
-                    match(  SIGNED_INT_16BIT) ||
-                    match(  SIGNED_INT_32BIT) ||
-                    match(  SIGNED_INT_64BIT) ||
-                    match(UNSIGNED_INT_8BIT ) ||
-                    match(UNSIGNED_INT_16BIT) ||
-                    match(UNSIGNED_INT_32BIT) ||
-                    match(UNSIGNED_INT_64BIT))
+            else if(match(NATIVE_S8 ) ||
+                    match(NATIVE_S16) ||
+                    match(NATIVE_S32) ||
+                    match(NATIVE_S64) ||
+                    match(NATIVE_U8 ) ||
+                    match(NATIVE_U16) ||
+                    match(NATIVE_U32) ||
+                    match(NATIVE_U64))
             {
                 // TODO(MIGUEL): implement native types
                 //return native call;
@@ -336,8 +354,8 @@ class FLParser
     
     private FLExpr primary()
     {
-        if (match(FALSE)) return new FLExpr.Literal(false);
-        if (match(TRUE )) return new FLExpr.Literal(true);
+        if (match(FALSE))  return new FLExpr.Literal(false);
+        if (match(TRUE ))  return new FLExpr.Literal(true);
         if (match(NULL  )) return new FLExpr.Literal(null);
         if (match(NUMBER, STRING)) 
         {
@@ -356,7 +374,7 @@ class FLParser
             return new FLExpr.Grouping(expr);
         }
         
-        throw error(peek(), "Expect expression. Im here");
+        throw error(peek(), "Expect expression.");
     }
     
     //~ HELPER FUNCTIONS
@@ -422,7 +440,11 @@ class FLParser
     private void synchronize()
     {
         advance();
-        
+        /*
+        var hello: 8;
+        )if() ;
+    
+    */
         while (!isAtEnd())
         {
             if (previous().type == SEMICOLON) return;

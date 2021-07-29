@@ -1,6 +1,83 @@
 # Finlang Specs
 
 
+
+## Metasyntax v.10
+```c
+program     -> decleration* EOF ;
+
+decleration -> varDecl | statement ;
+
+varDecl     -> ("var" | "u8" | "u16" | "u32" | "u64" ) IDENTIFIER ( "=" expression )? ";" ;
+
+
+statement   -> exprStmt | forStmt | ifStmt | printStmt | whileStmt | block ;
+
+forStmt     -> "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement ;
+
+ifStmt      -> "if" "(" expression ")" statement ("else" statement) ? ;
+
+block       -> "{" statement "}" 
+
+exprStmt    -> expression ";" ;
+printStmt   -> "print" expression ";" ;
+
+expression  -> literal; | unary | binary | grouping
+
+assignment  -> IDENTIFIER "=" assignment | logic_or;
+
+logic_or    -> logic_and ( "or" logic_and )* ;
+
+logic_and   -> equality ( "and" equality )* ;
+
+
+literal     ->  NATIVE | NUMBER | STRING | "true" | "false" | "nullptr" ;
+grouping    ->  
+unary       ->  ("-" | "!") primary;                                       
+binary      ->  expression operator expression                                
+operator    ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" 
+primary     ->  NATIVE | NUMBER | STRING | "true" | "false" | "nullptr" "(" | expression | ")" | IDENTIFIER;
+```
+
+
+## Metasyntax v.09
+```c
+program     -> decleration* EOF ;
+
+decleration -> varDecl | statement ;
+
+varDecl     -> "var" IDENTIFIER ( "=" expression )? ";" ;
+
+statement   -> exprStmt | forStmt | ifStmt | printStmt | whileStmt | block ;
+
+forStmt     -> "for" "(" ( varDecl | exprStmt | ";" )
+expression? ";"
+expression? ")" statement ;
+
+ifStmt      -> "if" "(" expression ")" statement ("else" statement) ? ;
+
+block       -> "{" statement "}" 
+
+exprStmt    -> expression ";" ;
+printStmt   -> "print" expression ";" ;
+
+expression  -> literal; | unary | binary | grouping
+
+assignment  -> IDENTIFIER "=" assignment | logic_or;
+
+logic_or    -> logic_and ( "or" logic_and )* ;
+
+logic_and   -> equality ( "and" equality )* ;
+
+
+literal     ->  NUMBER | STRING | "true" | "false" | "nullptr" ;
+grouping    ->  
+unary       ->  ("-" | "!") primary;                                       
+binary      ->  expression operator expression                                
+operator    ->  "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" 
+primary     ->  NUMBER | STRING | "true" | "false" | "nullptr" "(" | expression | ")" | IDENTIFIER;
+```
+
 ## Metasyntax v.08
 ```c
 program     -> decleration* EOF ;
@@ -15,7 +92,7 @@ forStmt     -> "for" "(" ( varDecl | exprStmt | ";" )
 expression? ";"
 expression? ")" statement ;
 
-ifStmt      -> "if" "(" expression ")" statement ("else"                         statement) ? ;
+ifStmt      -> "if" "(" expression ")" statement ("else" statement) ? ;
 
 block       -> "{" statement "}" 
 

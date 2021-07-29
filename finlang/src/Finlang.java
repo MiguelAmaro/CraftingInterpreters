@@ -10,6 +10,8 @@ import java.nio.charset.Charset;
 
 import java.util.List;
 
+
+
 class Finlang
 {
     private static final FLInterpreter interpreter     = new FLInterpreter();
@@ -37,6 +39,7 @@ class Finlang
                 runFile(option);
             }
         }
+        
         else
         {
             runPrompt();
@@ -76,7 +79,9 @@ class Finlang
         FLScanner     scanner = new FLScanner(source);
         List<FLToken>  tokens = scanner.scanTokens();
         
-        FLParser parser        = new FLParser(tokens);
+        FLPreprocessor preprocessor = new FLPreprocessor(tokens);
+        
+        FLParser parser        = new FLParser(preprocessor.tokens);
         List<FLStmt>statements = parser.parse();
         
         // Stop if there was a syntax error.

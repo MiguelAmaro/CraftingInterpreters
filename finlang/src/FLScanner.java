@@ -36,15 +36,22 @@ class FLScanner
         keywords.put("true",   TRUE);
         keywords.put("var",    VAR);
         
-        keywords.put("u8",     UNSIGNED_INT_8BIT);
-        keywords.put("u16",    UNSIGNED_INT_16BIT);
-        keywords.put("u32",    UNSIGNED_INT_32BIT);
-        keywords.put("u64",    UNSIGNED_INT_64BIT);
+        keywords.put("#ifndef", PP_IFNDEF);
+        keywords.put("#define", PP_DEF);
+        keywords.put("#if"    , PP_IF);
+        keywords.put("#else"  , PP_ELSE);
+        keywords.put("#endif" , PP_ENDIF);
         
-        keywords.put("s8",     SIGNED_INT_8BIT);
-        keywords.put("s16",    SIGNED_INT_16BIT);
-        keywords.put("s32",    SIGNED_INT_32BIT);
-        keywords.put("s64",    SIGNED_INT_64BIT);
+        
+        keywords.put("u8",     NATIVE_U8);
+        keywords.put("u16",    NATIVE_U16);
+        keywords.put("u32",    NATIVE_U32);
+        keywords.put("u64",    NATIVE_U64);
+        
+        keywords.put("s8",     NATIVE_S8);
+        keywords.put("s16",    NATIVE_S16);
+        keywords.put("s32",    NATIVE_S32);
+        keywords.put("s64",    NATIVE_S64);
         keywords.put("while",  WHILE);
     }
     
@@ -82,6 +89,7 @@ class FLScanner
             case '}': addToken(BRACE_RIGHT); break;
             case ',': addToken(COMMA      ); break;
             case '.': addToken(DOT        ); break;
+            case ':': addToken(COLON      ); break; // TODO(MIGUEL): use this for declaration
             case '-': addToken(MINUS      ); break;
             case '+': addToken(PLUS       ); break;
             case ';': addToken(SEMICOLON  ); break;
@@ -110,6 +118,21 @@ class FLScanner
                     // A comment goes until the end of the line.
                     while (peek() != '\n' && !isAtEnd()) advance();
                 }
+                else if(match('*'))
+                {
+                    
+                    while ((!isAtEnd())) 
+                    { 
+                        advance();
+                        
+                        if(match('*') && peek() == '/')
+                        {
+                            advance();
+                            break;
+                        }
+                        
+                    }
+                }
                 else
                 {
                     addToken(SLASH);
@@ -130,12 +153,35 @@ class FLScanner
             
             default :
             {
+                
                 if (isDigit(c))
                 {
-                    number();
+                    if(c == '0')
+                    {
+                        // NOTE(MIGUEL): should this be native???
+                        if(false)
+                        {}
+                        else if(match('x') || match('X'))
+                        {
+                            hex();
+                        }
+                        else if(match('b') || match('B'))
+                        {
+                            bin();
+                        }
+                        else
+                        {
+                            number();
+                        }
+                    }
+                    else
+                    {
+                        number();
+                    }
                 }
                 else if (isAlpha(c))
                 {
+                    // NOTE(MIGUEL): preprocessor token created here
                     identifier();
                 }
                 else
@@ -150,7 +196,7 @@ class FLScanner
     {
         while (isAlphaNumeric(peek())) advance();
         
-        String    text = source.substring(start, current);
+        String      text = source.substring(start, current);
         FLTokenType type = keywords.get(text);
         
         if (type == null) type = IDENTIFIER;
@@ -185,8 +231,36 @@ class FLScanner
             while (isDigit(peek())) advance();
         }
         
+        // NOTE(MIGUEL): how do this play into supporting native types
         addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
+    
+    private void hex()
+    {
+        while (isHex(peek())) advance();
+        
+        String num = source.substring(start + 2, current);
+        
+        if((num.charAt(0) > '7') && (num.length() >= 8))
+        {
+            addToken(NUMBER, Long.parseLong(num, 16));
+        }
+        else
+        {
+            addToken(NUMBER, Integer.parseInt(num, 16));
+        }
+    }
+    
+    
+    private void bin()
+    {
+        while (isBin(peek())) advance();
+        
+        
+        // NOTE(MIGUEL): how do this play into supporting native types
+        addToken(NUMBER, Integer.parseInt(source.substring(start + 2, current), 2));
+    }
+    
     
     private void string()
     {
@@ -238,6 +312,20 @@ class FLScanner
         return c >= '0' && c <= '9';
     } 
     
+    private boolean isHex(char c)
+    {
+        return ((c >= '0' && c <= '9') ||
+                (c >= 'A' && c <= 'F') ||
+                (c >= 'a' && c <= 'f'));
+    } 
+    
+    
+    private boolean isBin(char c)
+    {
+        return c == '0' || c == '1';
+    } 
+    
+    
     private char advance()
     {
         return source.charAt(current++);
@@ -246,12 +334,16 @@ class FLScanner
     private void addToken(FLTokenType type)
     {
         addToken(type, null);
+        
+        return;
     }
     
     private void addToken(FLTokenType type, Object literal)
     {
         String text = source.substring(start, current);
         tokens.add(new FLToken(type, text, literal, line));
+        
+        return;
     }
 }
 

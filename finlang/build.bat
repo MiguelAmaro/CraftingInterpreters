@@ -42,6 +42,7 @@ echo building finlang...
 .\src\FLEnvironment.java ^
 .\src\FLInterpreter.java ^
 .\src\FLParser.java ^
+.\src\FLPreprocessor.java ^
 .\src\FLRuntimeError.java ^
 .\src\FLScanner.java ^
 .\src\FLStmt.java ^

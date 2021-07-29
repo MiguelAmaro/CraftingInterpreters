@@ -3,7 +3,7 @@ package com.finlang.lang;
 class FLToken
 {
     final FLTokenType type;
-    final String    lexeme;
+    final String    lexeme; //null
     final Object    literal;
     final int       line; 
     
@@ -19,6 +19,5 @@ class FLToken
     {
         return type + " " + lexeme + " " + literal;
     }
-    
     
 }

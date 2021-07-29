@@ -1,14 +1,1 @@
-//u8   char  = 256;
-//u16  short = 66565;
-//u32  int   = 4000000;
-
-//int += char + int;
-//short = short + int/char;
-
-//string end = "end";
-
-print "one";
-print true;
-print 2 + 1;
-
-print("end");
+var name: "john";

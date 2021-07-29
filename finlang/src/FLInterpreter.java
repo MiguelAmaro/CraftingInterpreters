@@ -2,7 +2,6 @@ package com.finlang.lang;
 
 import java.util.List;
 
-// NOTE(MIGUEL): MENTIONED IN: 7.2
 class FLInterpreter implements
 FLExpr.Visitor<Object>,
 FLStmt.Visitor<Void>
@@ -106,6 +105,13 @@ FLStmt.Visitor<Void>
     {
         if (object == null) return false;
         if (object instanceof Boolean) return (boolean)object;
+        if (object instanceof Double)
+        {
+            Double i = (Double)object;
+            Double zero = 0.0;
+            
+            return zero.equals(i) ? false : true;
+        }
         
         return true;
     }
@@ -120,7 +126,7 @@ FLStmt.Visitor<Void>
     
     private String stringify(Object object)
     {
-        if (object == null) return "nil";
+        if (object == null) return "null";
         
         if (object instanceof Double)
         {
