@@ -1,26 +1,22 @@
-/* date = April 19th 2022 6:56 pm */
-
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include "common.h"
-#include <stdlib.h>
 
 #define MemGrowCapacity(Capacity) ((Capacity)<8? 8 : (Capacity)*2)
-#define MemGrowArray(type, Ptr, OldCount, NewCount) \
+#define ArrayGrow(type, Ptr, OldCount, NewCount) \
 (type*)MemRealloc(Ptr, sizeof(type)*(OldCount),  sizeof(type)*(NewCount))
-#define MemFreeArray(type, Ptr, OldCount) MemRealloc(Ptr, sizeof(type)*(OldCount), 0)
+#define ArrayFree(type, Ptr, OldCount) MemRealloc(Ptr, sizeof(type)*(OldCount), 0)
 
-void *MemRealloc(void *Ptr, size_t OldSize, size_t NewSize)
+fn void *MemRealloc(void *PtrOld, size_t OldSize, size_t NewSize)
 {
   if(NewSize == 0)
   {
-    free(Ptr);
+    free(PtrOld);
     return (void *)0;
   }
   
-  void *Result = realloc(Ptr, NewSize);
-  if(Result == 0) exit(1);
+  void *Result = realloc(PtrOld, NewSize);
+  Assert(Result != NULL);
   return Result;
 }
 

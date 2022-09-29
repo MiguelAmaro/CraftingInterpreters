@@ -1,55 +1,62 @@
-/* date = April 19th 2022 6:18 pm */
-
 #ifndef CHUNK_H
 #define CHUNK_H
 
-#include "common.h"
-#include "debug.h"
-
-typedef enum opcode opcode
+typedef enum opcode opcode;
 enum opcode 
 {
-  Op_Return;
-  Op_Count;
+  Op_Const,
+  Op_Return,
+  Op_Count,
 };
 
-typedef struct chunk chunk
+typedef struct chunk chunk;
 struct chunk
 {
   u32 Count;
   u32 Capacity;
   u8 *Code;
+  u32 *Lines;
+  value_array Consts;
 };
+fdecl void ChunkInit(chunk *Chunk);
+fdecl void ChunkAppend(chunk *Chunk, u8 Byte, u32 Line);
+fdecl void ChunkFree(chunk* Chunk);
 
-void InitChunk(chunk *Chunk)
+fn void ChunkInit(chunk *Chunk)
 {
   Chunk->Count    = 0;
   Chunk->Capacity = 0;
-  Chunk->Code     = 0;
-  
-  
+  Chunk->Code     = NULL;
+  Chunk->Lines    = NULL;
+  ValueArrayInit(&Chunk->Consts);
   return;
 }
-
-void AddChunk(chunk *Chunk, u8 Byte)
+fn void ChunkFree(chunk* Chunk)
+{
+  ArrayFree(u8, Chunk->Code, Chunk->Capacity);
+  ArrayFree(u32, Chunk->Lines, Chunk->Capacity);
+  ValueArrayFree(&Chunk->Consts);
+  ChunkInit(Chunk);
+  return;
+}
+fn void ChunkAppend(chunk *Chunk, u8 Byte, u32 Line)
 {
   if(Chunk->Capacity < Chunk->Count + 1)
   {
     u32 OldCapacity = Chunk->Capacity;
     Chunk->Capacity = MemGrowCapacity(OldCapacity);
-    Chunk->Code = MemGrowArray(u8, Chunk->Code, OldCapacity, Chunk->Capacity);
-    Chunk->Code[Chunk->Count] = Byte;
+    Chunk->Code  = ArrayGrow(u8 , Chunk->Code , OldCapacity, Chunk->Capacity);
+    Chunk->Lines = ArrayGrow(u32, Chunk->Lines, OldCapacity, Chunk->Capacity);
   }
-  
+  Chunk->Code [Chunk->Count] = Byte;
+  Chunk->Lines[Chunk->Count] = Line;
+  Chunk->Count++;
   return;
 }
-
-void FreeChunk(chunk* Chunk)
+fn u32 ChunkAppendConst(chunk* Chunk, value Value)
 {
-  MemFreeArray(u8, Chunk->Code, Chunk->Capacity);
-  InitChunk(Chunk);
-  
-  return;
+  ValueArrayAppend(&Chunk->Consts, Value);
+  return Chunk->Consts.Count - 1; //NOTE: Returning the index into the Consts Array for the elm we just added.
 }
 
 #endif //CHUNK_H
